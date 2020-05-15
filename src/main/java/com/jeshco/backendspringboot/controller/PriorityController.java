@@ -2,6 +2,7 @@ package com.jeshco.backendspringboot.controller;
 
 import com.jeshco.backendspringboot.entity.Priority;
 import com.jeshco.backendspringboot.repository.PriorityRepository;
+import com.jeshco.backendspringboot.search.PrioritySearchValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -21,11 +22,9 @@ public class PriorityController {
         this.priorityRepository = priorityRepository;
     }
 
-    @GetMapping("test")
-    public List<Priority> test() {
-        List<Priority> list = priorityRepository.findAll();
-        System.out.println("list= " + list);
-        return list;
+    @GetMapping("all")
+    public List<Priority> findAll() {
+        return priorityRepository.findAllByOrderByIdAsc();
     }
 
     @PostMapping("add")
@@ -83,6 +82,11 @@ public class PriorityController {
         }
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("search")
+    public ResponseEntity<List<Priority>> search(@RequestBody PrioritySearchValues prioritySearchValues) {
+        return ResponseEntity.ok(priorityRepository.findByTitle(prioritySearchValues.getText()));
     }
 
 

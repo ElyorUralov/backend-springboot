@@ -2,6 +2,7 @@ package com.jeshco.backendspringboot.controller;
 
 import com.jeshco.backendspringboot.entity.Category;
 import com.jeshco.backendspringboot.repository.CategoryRepository;
+import com.jeshco.backendspringboot.search.CategorySearchValues;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,9 @@ public class CategoryController {
         this.categoryRepository = categoryRepository;
     }
 
-    @GetMapping("test")
-    public List<Category> test() {
-        List<Category> list = categoryRepository.findAll();
-        return list;
+    @GetMapping("all")
+    public List<Category> findAll() {
+        return categoryRepository.findAllByOrderByTitleAsc();
     }
 
     @PostMapping("add")
@@ -75,5 +75,12 @@ public class CategoryController {
 
         return new ResponseEntity(HttpStatus.OK);
     }
+
+    @PostMapping("search")
+    public ResponseEntity<List<Category>> search(@RequestBody CategorySearchValues categorySearchValues) {
+        return ResponseEntity.ok(categoryRepository.findByTitle(categorySearchValues.getText()));
+    }
+
+
 
 }
