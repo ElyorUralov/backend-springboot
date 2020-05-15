@@ -2,6 +2,7 @@ package com.jeshco.backendspringboot.controller;
 
 import com.jeshco.backendspringboot.entity.Stat;
 import com.jeshco.backendspringboot.repository.StatRepository;
+import com.jeshco.backendspringboot.util.MyLogger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,9 @@ public class StatController {
 
     @GetMapping
     public ResponseEntity<Stat> findById() {
+
+        MyLogger.showMethodName("StatController", "search");
+
         return ResponseEntity.ok(statRepository.findById(defaultId).get());
     }
 }
