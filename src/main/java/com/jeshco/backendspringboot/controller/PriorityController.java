@@ -67,7 +67,9 @@ public class PriorityController {
         if (priority.getColor() == null || priority.getColor().trim().length() == 0) {
             return new ResponseEntity("missed param: color", HttpStatus.NOT_ACCEPTABLE);
         }
-        return ResponseEntity.ok(priorityRepository.save(priority));
+        priorityRepository.save(priority);
+
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @GetMapping("id/{id}")

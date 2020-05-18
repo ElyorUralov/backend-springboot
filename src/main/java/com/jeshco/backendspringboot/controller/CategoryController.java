@@ -59,7 +59,9 @@ public class CategoryController {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        return ResponseEntity.ok(categoryRepository.save(category));
+        categoryRepository.save(category);
+
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @GetMapping("id/{id}")
