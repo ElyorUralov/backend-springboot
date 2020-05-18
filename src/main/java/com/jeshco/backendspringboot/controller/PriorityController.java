@@ -3,6 +3,7 @@ package com.jeshco.backendspringboot.controller;
 import com.jeshco.backendspringboot.entity.Priority;
 import com.jeshco.backendspringboot.repository.PriorityRepository;
 import com.jeshco.backendspringboot.search.PrioritySearchValues;
+import com.jeshco.backendspringboot.service.PriorityService;
 import com.jeshco.backendspringboot.util.MyLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,69 +18,55 @@ import java.util.NoSuchElementException;
 @RequestMapping("/api/priority/")
 public class PriorityController {
 
-    private PriorityRepository priorityRepository;
+    private PriorityService priorityService;
 
-    public PriorityController(PriorityRepository priorityRepository) {
-        this.priorityRepository = priorityRepository;
+    public PriorityController(PriorityService priorityService) {
+        this.priorityService = priorityService;
     }
 
     @GetMapping("all")
     public List<Priority> findAll() {
-
         MyLogger.showMethodName("PriorityController", "findAll");
-
-        return priorityRepository.findAllByOrderByIdAsc();
+        return priorityService.findAll();
     }
 
     @PostMapping("add")
     public ResponseEntity<Priority> add(@RequestBody Priority priority) {
-
         MyLogger.showMethodName("PriorityController", "add");
-
         if (priority.getId() != null && priority.getId() != 0) {
             return new ResponseEntity("redundant param: id MUST be null", HttpStatus.NOT_ACCEPTABLE);
         }
-
         if (priority.getTitle() == null || priority.getTitle().trim().length() == 0) {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
-
         if (priority.getColor() == null || priority.getColor().trim().length() == 0) {
             return new ResponseEntity("missed param: color", HttpStatus.NOT_ACCEPTABLE);
         }
-
-        return ResponseEntity.ok(priorityRepository.save(priority));
+        return ResponseEntity.ok(priorityService.add(priority));
     }
 
     @PutMapping("update")
     public ResponseEntity update(@RequestBody Priority priority) {
-
         MyLogger.showMethodName("PriorityController", "update");
-
         if (priority.getId() == null || priority.getId() == 0) {
             return new ResponseEntity("missed param: id", HttpStatus.NOT_ACCEPTABLE);
         }
-
         if (priority.getTitle() == null || priority.getTitle().trim().length() == 0) {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
-
         if (priority.getColor() == null || priority.getColor().trim().length() == 0) {
             return new ResponseEntity("missed param: color", HttpStatus.NOT_ACCEPTABLE);
         }
-        priorityRepository.save(priority);
-
+        priorityService.update(priority);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @GetMapping("id/{id}")
     public ResponseEntity<Priority> findById(@PathVariable Long id) {
-
         MyLogger.showMethodName("PriorityController", "findById");
-
         Priority priority = null;
         try {
-            priority = priorityRepository.findById(id).get();
+            priority = priorityService.findById(id);
         } catch (NoSuchElementException e) {
             e.printStackTrace();
             return new ResponseEntity("id=" + id + " not found", HttpStatus.NOT_ACCEPTABLE);
@@ -89,25 +76,20 @@ public class PriorityController {
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
-
         MyLogger.showMethodName("PriorityController", "delete");
-
         try {
-            priorityRepository.deleteById(id);
+            priorityService.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
             e.printStackTrace();
             return new ResponseEntity("id=" + id + " not found", HttpStatus.NOT_ACCEPTABLE);
         }
-
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @PostMapping("search")
     public ResponseEntity<List<Priority>> search(@RequestBody PrioritySearchValues prioritySearchValues) {
-
         MyLogger.showMethodName("PriorityController", "search");
-
-        return ResponseEntity.ok(priorityRepository.findByTitle(prioritySearchValues.getText()));
+        return ResponseEntity.ok(priorityService.search(prioritySearchValues));
     }
 
 }
